@@ -1,0 +1,10 @@
+.idea/
+
+.wwebjs_auth/
+.wwebjs_cache/
+
+.env
+
+node_modules/
+
+config.yaml

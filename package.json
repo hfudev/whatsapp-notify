@@ -1,0 +1,37 @@
+{
+  "name": "whatsapp-notify",
+  "version": "0.1.0",
+  "main": "cli.js",
+  "description": "A WhatsApp bot for sending notifications",
+  "bin": {
+    "whatsapp-notify": "./cli.js"
+  },
+  "keywords": [
+    "whatsapp",
+    "notification",
+    "bot"
+  ],
+  "author": "Fu Hanxi <hfudev@gmail.com>",
+  "license": "GPL-3.0-only",
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.26.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/qrcode-terminal": "^0.12.2",
+    "prettier": "^3.3.3"
+  },
+  "scripts": {
+    "test": "echo \"no test written yet :D\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hfudev/whatsapp-notify.git"
+  },
+  "homepage": "https://github.com/hfudev/whatsapp-notify#readme",
+  "bugs": {
+    "url": "https://github.com/hfudev/whatsapp-notify/issues"
+  }
+}
