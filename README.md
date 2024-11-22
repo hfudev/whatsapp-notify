@@ -1,10 +1,12 @@
-# README
+# whatsapp-notify
 
 > [!CAUTION]
 > Use this tool at your own risk. Your WhatsApp account may be banned. This tool is not affiliated with WhatsApp.
 > The author is not responsible for any damage caused by the use of this tool.
 
 ## Installation
+
+![NPM Version](https://img.shields.io/npm/v/whatsapp-notify)
 
 ```bash
 npm install -g whatsapp-notify
