@@ -20,8 +20,15 @@ const { Client, LocalAuth } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
 const fs = require("fs");
 const yaml = require("js-yaml");
+const Reminder = require("./Reminder");
 
-const config = yaml.load(fs.readFileSync("config.yaml", "utf8"));
+let config;
+try {
+  config = yaml.load(fs.readFileSync("config.yaml", "utf8"));
+} catch (error) {
+  console.error("Failed to load configuration file: config.yaml", error);
+  process.exit(1);
+}
 
 const client = new Client({
   authStrategy: new LocalAuth(),
@@ -32,84 +39,32 @@ const client = new Client({
 });
 
 client.on("qr", (qr) => {
-  console.log("QR code");
+  console.log("Please scan the QR code to authenticate:");
   qrcode.generate(qr, { small: true });
 });
 
-client.initialize();
-
 client.on("authenticated", () => {
-  console.log("Authenticated Successfully");
+  console.log("Authenticated successfully.");
 });
 
 client.on("auth_failure", (msg) => {
-  console.error("Authentication failed", msg);
+  console.error(
+    "Authentication failed. Please check your credentials and try again.",
+    msg,
+  );
 });
 
 client.on("disconnected", (reason) => {
-  console.log("Client was logged out", reason);
+  console.log("Client was logged out. Reason:", reason);
 });
 
-// real code starts here
 client.on("ready", async () => {
-  console.log("Start notifications");
+  console.log("Client is ready. Starting notifications...");
 
-  Object.keys(config.notifications).forEach(setupReminder);
+  const reminder = new Reminder(client, config);
+  Object.keys(config.notifications).forEach((configName) => {
+    reminder.setup(configName);
+  });
 });
 
-function setupReminder(config_name) {
-  const notification = config.notifications[config_name];
-
-  if (!notification) {
-    console.error(`No configuration found for ${config_name}`);
-    return;
-  }
-
-  console.log(`executing ${config_name}`);
-
-  const {
-    init_message,
-    interval = 0,
-    remind_until_receive,
-    remind_interval,
-    success_message,
-    to_numbers,
-  } = notification;
-
-  to_numbers.forEach((number) => {
-    client.sendMessage(number, init_message);
-
-    let remindIntervalId;
-    if (remind_until_receive && remind_interval) {
-      remindIntervalId = setInterval(() => {
-        client.sendMessage(number, init_message);
-      }, remind_interval * 1000);
-    }
-
-    const messageListener = (msg) => {
-      if (
-        remind_until_receive &&
-        msg.from === number &&
-        msg.body.toLowerCase() === remind_until_receive.toLowerCase()
-      ) {
-        if (remindIntervalId) {
-          clearInterval(remindIntervalId);
-        }
-        client.sendMessage(number, success_message);
-        client.removeListener("message_create", messageListener);
-        console.log(`reminder for ${config_name} is done`);
-
-        if (interval > 0) {
-          console.log(
-            `setting up next reminder for ${config_name} in ${interval} seconds`,
-          );
-          setTimeout(() => {
-            setupReminder(config_name);
-          }, interval * 1000);
-        }
-      }
-    };
-
-    client.on("message_create", messageListener);
-  });
-}
+client.initialize();
